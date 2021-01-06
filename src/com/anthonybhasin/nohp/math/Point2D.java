@@ -1,31 +1,36 @@
 package com.anthonybhasin.nohp.math;
 
-public class Point {
+public class Point2D {
 
-	public static Point add(Point p1, Point p2) {
+	public static Point2D at(int x, int y) {
 
-		return new Point(p1.x + p2.x, p1.y + p2.y);
+		return new Point2D(x, y);
 	}
 
-	public static Point subtract(Point p1, Point p2) {
+	public static Point2D add(Point2D p1, Point2D p2) {
 
-		return new Point(p1.x - p2.x, p1.y - p2.y);
+		return new Point2D(p1.x + p2.x, p1.y + p2.y);
+	}
+
+	public static Point2D subtract(Point2D p1, Point2D p2) {
+
+		return new Point2D(p1.x - p2.x, p1.y - p2.y);
 	}
 
 	public float x, y;
 
-	public Point(float x, float y) {
+	public Point2D(float x, float y) {
 
 		this.x = x;
 		this.y = y;
 	}
 
-	public Point() {
+	public Point2D() {
 
 		this(0, 0);
 	}
 
-	public Point(Point point) {
+	public Point2D(Point2D point) {
 
 		this(point.x, point.y);
 	}
@@ -42,7 +47,7 @@ public class Point {
 		this.y = y;
 	}
 
-	public void set(Point point) {
+	public void set(Point2D point) {
 
 		this.x = point.x;
 		this.y = point.y;
@@ -69,22 +74,36 @@ public class Point {
 		this.y += dy;
 	}
 
+	public Point2D add(Point2D point) {
+
+		this.translate(point.x, point.y);
+
+		return this;
+	}
+
+	public Point2D subtract(Point2D point) {
+
+		this.translate(-point.x, -point.y);
+
+		return this;
+	}
+
 	public void move(Vector2D dir) {
 
 		this.translate(dir.x, dir.y);
 	}
 
-	public float signedDistanceX(Point other) {
+	public float signedDistanceX(Point2D other) {
 
 		return other.x - this.x;
 	}
 
-	public float signedDistanceY(Point other) {
+	public float signedDistanceY(Point2D other) {
 
 		return other.y - this.y;
 	}
 
-	public float distanceSquared(Point other) {
+	public float distanceSquared(Point2D other) {
 
 		float distX = this.signedDistanceX(other), distY = this.signedDistanceY(other);
 
@@ -95,7 +114,7 @@ public class Point {
 	 * Try comparing distanceSquared to your expected distance * distance instead to
 	 * avoid the sqrt operation.
 	 */
-	public float distance(Point other) {
+	public float distance(Point2D other) {
 
 		return (float) Math.sqrt(this.distanceSquared(other));
 	}

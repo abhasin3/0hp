@@ -16,7 +16,7 @@ public class GameSettings {
 	 */
 	public static boolean debugMode = false;
 
-	public static int windowWidth = 800, windowHeight = 450, windowScale = 1;
+	public static int width = 800, height = 450, scale = 1;
 
 	/**
 	 * If maxTPS is updated after {@link Game#create()} has been called,

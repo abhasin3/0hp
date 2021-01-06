@@ -1,50 +1,30 @@
 package com.anthonybhasin.nohp.level.entity;
 
+import java.awt.Color;
+
 import com.anthonybhasin.nohp.Screen;
-import com.anthonybhasin.nohp.math.Point;
+import com.anthonybhasin.nohp.math.Bounds;
+import com.anthonybhasin.nohp.math.Bounds.CameraView;
 import com.anthonybhasin.nohp.texture.Sprite;
 
-public abstract class ImageEntity extends Entity {
-
-	/**
-	 * Stores the render point of the ImageEntity.
-	 * 
-	 * <p>
-	 * Refers to the <b>top left</b> point in the game's coordinate system (not the
-	 * screen location) when being rendered (may be impacted by special effects such
-	 * as rotation).
-	 * 
-	 * <p>
-	 * Note: the render point is updated after calculations have been completed
-	 * (after {@link Entity#tick()} has been called from
-	 * {@link com.anthonybhasin.nohp.level.Level#tick()}. Any use prior would refer
-	 * to the last snapshot of the render point (based on the previous tick's
-	 * positional data).
-	 */
-	public Point renderPoint;
+public abstract class ImageEntity extends Entity implements CameraRotatable, EngineDebugRenderable {
 
 	protected int width, height;
 
-	/**
-	 * Determines whether the image is rendered absolutely on the screen or relative
-	 * to the main camera.
-	 */
-	protected boolean positionRelative;
-
 	protected Sprite sprite;
+
+	protected RotationMode rotationMode;
 
 	public ImageEntity(Sprite sprite) {
 
 		super();
 
-		this.renderPoint = new Point();
-
-		this.positionRelative = true;
-
 		this.sprite = sprite;
 
 		this.width = this.sprite.getWidth();
 		this.height = this.sprite.getHeight();
+
+		this.rotationMode = RotationMode.NORMAL_ROTATION;
 	}
 
 	@Override
@@ -53,9 +33,28 @@ public abstract class ImageEntity extends Entity {
 		Screen.sprite(this).draw();
 	}
 
-	public boolean isPositionRelative() {
+	@Override
+	public void engineDebugRender() {
 
-		return this.positionRelative;
+		Bounds boundsUnrot = this.bounds.toCameraView(CameraView.UNROTATED_LAYER);
+
+		Screen.rect().start(boundsUnrot.getMinX(), boundsUnrot.getMinY())
+				.dimensions((int) (boundsUnrot.getMaxX() - boundsUnrot.getMinX()),
+						(int) (boundsUnrot.getMaxY() - boundsUnrot.getMinY()))
+				.color(Color.ORANGE).cameraView(boundsUnrot.getCameraView()).draw();
+
+		Bounds boundsRot = this.bounds.toCameraView(CameraView.ROTATED_LAYER);
+
+		Screen.rect().start(boundsRot.getMinX(), boundsRot.getMinY())
+				.dimensions((int) (boundsRot.getMaxX() - boundsRot.getMinX()),
+						(int) (boundsRot.getMaxY() - boundsRot.getMinY()))
+				.color(Color.YELLOW).cameraView(boundsRot.getCameraView()).draw();
+	}
+
+	@Override
+	public RotationMode getRotationMode() {
+
+		return rotationMode;
 	}
 
 	public float getMidX() {

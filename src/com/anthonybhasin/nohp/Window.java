@@ -12,8 +12,6 @@ import com.anthonybhasin.nohp.io.Mouse;
 
 public class Window {
 
-	public static int width, height, scale;
-
 	public static int displayX, displayY;
 
 	public static float resizeScale;
@@ -25,14 +23,9 @@ public class Window {
 
 	public static void create(int width, int height, int scale, String title) {
 
-		Window.width = width;
-		Window.height = height;
-
-		Window.scale = scale;
-
 		Window.title = title;
 
-		Dimension scaledSize = new Dimension((int) (Window.width * Window.scale), (int) (Window.height * Window.scale));
+		Dimension scaledSize = new Dimension((int) (width * scale), (int) (height * scale));
 
 		Window.frame = new JFrame();
 
@@ -74,11 +67,12 @@ public class Window {
 
 	public static void updateDisplayBounds() {
 
-		double fullWidth = Window.width * Window.scale, fullHeight = Window.height * Window.scale;
+		double fullWidth = GameSettings.width * GameSettings.scale,
+				fullHeight = GameSettings.height * GameSettings.scale;
 
 		int canvasWidth = Window.canvas.getWidth(), canvasHeight = Window.canvas.getHeight();
 
-		if (canvasHeight / (float) canvasWidth < Window.height / (float) Window.width) {
+		if (canvasHeight / (float) canvasWidth < GameSettings.height / (float) GameSettings.width) {
 //			Use height as scale
 			Window.resizeScale = canvasHeight / (float) fullHeight;
 			int scaledWidth = (int) (fullWidth * Window.resizeScale);

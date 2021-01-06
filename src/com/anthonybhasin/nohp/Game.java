@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
+import com.anthonybhasin.nohp.io.Log;
 import com.anthonybhasin.nohp.io.Mouse;
 import com.anthonybhasin.nohp.level.Level;
 
@@ -31,8 +32,7 @@ public class Game {
 
 		this.running = false;
 
-		Window.create(GameSettings.windowWidth, GameSettings.windowHeight, GameSettings.windowScale,
-				GameSettings.windowTitle);
+		Window.create(GameSettings.width, GameSettings.height, GameSettings.scale, GameSettings.windowTitle);
 
 		this.updateMaxTPS();
 	}
@@ -47,13 +47,8 @@ public class Game {
 		this.level = level;
 	}
 
-	public void start() throws Exception {
+	public void start() {
 
-//		if (this.level == null) {
-//			
-//			throw new Exception("A game cannot be started without a level!");
-//		}
-//		
 		this.running = true;
 
 		this.bs = Window.canvas.getBufferStrategy();
@@ -101,6 +96,11 @@ public class Game {
 		this.level.tick();
 
 		Mouse.resetScroll();
+
+		if (GameSettings.engineDebugMode) {
+
+			Log.print(this.getFPS() + "fps, " + this.getTPS() + "tps/" + GameSettings.maxTPS + "maxtps");
+		}
 	}
 
 	public void render() {
@@ -114,16 +114,18 @@ public class Game {
 
 		// This clip prevents a Sprite from being rendered off the "display" screen
 		// which is ratio-proportional to the width / height.
-		g.clipRect(Window.displayX, Window.displayY, (int) (Window.width * Window.scale * Window.resizeScale),
-				(int) (Window.height * Window.scale * Window.resizeScale));
+		g.clipRect(Window.displayX, Window.displayY,
+				(int) (GameSettings.width * GameSettings.scale * Window.resizeScale),
+				(int) (GameSettings.height * GameSettings.scale * Window.resizeScale));
 		g.translate(Window.displayX, Window.displayY);
-		g2d.scale(Window.scale * Window.resizeScale, Window.scale * Window.resizeScale);
+		g2d.scale(GameSettings.scale * Window.resizeScale, GameSettings.scale * Window.resizeScale);
 
 		Screen.setGraphics(g2d);
 
 		this.level.render();
 
 		g.dispose();
+
 		this.bs.show();
 	}
 
@@ -132,7 +134,7 @@ public class Game {
 		return this.fps;
 	}
 
-	public int getTicks() {
+	public int getTPS() {
 
 		return this.ticks;
 	}

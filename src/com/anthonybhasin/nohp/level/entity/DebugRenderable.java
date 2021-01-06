@@ -7,8 +7,7 @@ public interface DebugRenderable {
 	/**
 	 * Implement to draw debug information about entities.
 	 * 
-	 * This method will only be called if debug mode is activated
-	 * {@link GameSettings#debugMode}
+	 * This method will only be called if {@link GameSettings#debugMode} is active
 	 */
 	public abstract void debugRender();
 }

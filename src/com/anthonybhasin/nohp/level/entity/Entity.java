@@ -1,6 +1,8 @@
 package com.anthonybhasin.nohp.level.entity;
 
-import com.anthonybhasin.nohp.math.Point;
+import com.anthonybhasin.nohp.math.Bounds;
+import com.anthonybhasin.nohp.math.Bounds.CameraView;
+import com.anthonybhasin.nohp.math.Point2D;
 import com.anthonybhasin.nohp.math.Position;
 
 public abstract class Entity {
@@ -12,13 +14,36 @@ public abstract class Entity {
 	 */
 	public Position position;
 
+	/**
+	 * Stores the positional data of the Entity on the
+	 * {@link com.anthonybhasin.nohp.level.Level}'s main {@link Camera}.
+	 * 
+	 * Refers to the drawn positional data of the Entity after the last tick. If a
+	 * large movement was made and the camera coordinates of the entity must be
+	 * determined for the current tick, call
+	 * {@link Camera#getCameraCoordinates(Entity)} instead.
+	 */
+	public Bounds bounds;
+
 	protected boolean persistent;
+
+	/**
+	 * Indicates whether the entity is relative to the
+	 * {@link com.anthonybhasin.nohp.level.Level}'s main
+	 * {@link com.anthonybhasin.nohp.level.entity.Camera}.
+	 */
+	protected boolean positionRelative;
 
 	public Entity() {
 
 		this.position = new Position(0, 0);
 
+		this.bounds = new Bounds(CameraView.ROTATED_LAYER, new float[] { 0, 0, 0, 0 }, new Point2D(), new Point2D(),
+				new Point2D(), new Point2D());
+
 		this.persistent = false;
+
+		this.positionRelative = true;
 	}
 
 	/**
@@ -33,17 +58,17 @@ public abstract class Entity {
 	public void render() {
 	}
 
-	public int signedDistanceX(Point point) {
+	public int signedDistanceX(Point2D point) {
 
 		return (int) (point.x - this.getMidX());
 	}
 
-	public int signedDistanceY(Point point) {
+	public int signedDistanceY(Point2D point) {
 
 		return (int) (point.y - this.getMidY());
 	}
 
-	public int distanceSquared(Point point) {
+	public int distanceSquared(Point2D point) {
 
 		int distX = this.signedDistanceX(point), distY = this.signedDistanceY(point);
 
@@ -54,7 +79,7 @@ public abstract class Entity {
 	 * Try comparing distanceSquared to your expected distance * distance instead to
 	 * prevent the sqrt operation.
 	 */
-	public int distance(Point point) {
+	public int distance(Point2D point) {
 
 		return (int) Math.sqrt(this.distanceSquared(point));
 	}
@@ -86,6 +111,11 @@ public abstract class Entity {
 	public boolean isPersistent() {
 
 		return this.persistent;
+	}
+
+	public boolean isPositionRelative() {
+
+		return this.positionRelative;
 	}
 
 	public float getMidX() {

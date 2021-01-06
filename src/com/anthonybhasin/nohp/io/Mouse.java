@@ -9,8 +9,9 @@ import java.awt.event.MouseWheelListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.anthonybhasin.nohp.GameSettings;
 import com.anthonybhasin.nohp.Window;
-import com.anthonybhasin.nohp.math.Point;
+import com.anthonybhasin.nohp.math.Point2D;
 
 public class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -18,7 +19,7 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 
 	public static int WHEEL_SCROLL_AMOUNT = 0, MOUSE_LEFT_BUTTON_CODE = 1, MOUSE_RIGHT_BUTTON_CODE = 3;
 
-	public static Point position = new Point();
+	public static Point2D position = new Point2D();
 
 	public static boolean getPressed(int buttonCode) {
 
@@ -75,8 +76,8 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 
 //		For proper position, dividing by the game scale as well as the resize scale.
 //		Also, subtracting away the padding from the resize black bars (displayX and displayY) which also need to be divided by TotalScale to get a proper game (not screen) coordinate.
-		Mouse.position.set((e.getX() - Window.displayX) / (Window.scale * Window.resizeScale),
-				(e.getY() - Window.displayY) / (Window.scale * Window.resizeScale));
+		Mouse.position.set((e.getX() - Window.displayX) / (GameSettings.scale * Window.resizeScale),
+				(e.getY() - Window.displayY) / (GameSettings.scale * Window.resizeScale));
 	}
 
 	@Override
@@ -84,8 +85,8 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 
 //		For proper position, dividing by the game scale as well as the resize scale.
 //		Also, subtracting away the padding from the resize black bars (displayX and displayY) which also need to be divided by TotalScale to get a proper game (not screen) coordinate.
-		Mouse.position.set((e.getX() - Window.displayX) / (Window.scale * Window.resizeScale),
-				(e.getY() - Window.displayY) / (Window.scale * Window.resizeScale));
+		Mouse.position.set((e.getX() - Window.displayX) / (GameSettings.scale * Window.resizeScale),
+				(e.getY() - Window.displayY) / (GameSettings.scale * Window.resizeScale));
 	}
 
 //	Mouse Wheel

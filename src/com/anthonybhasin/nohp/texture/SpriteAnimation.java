@@ -6,21 +6,23 @@ public class SpriteAnimation extends Sprite {
 
 	private Sprite[] sprites;
 
-	private boolean cycle, rising;
+	private boolean pingPong, rising;
 
 	private int animRate, timer, spriteIdx;
 
 	/**
 	 * Create a sprite animation object.
+	 * 
 	 * @param animRate - the amount of ticks between each frame.
-	 * @param cycle - whether to ping-pong the animation or not.
-	 * @param sprites - sprites to include in the animation (<b>must have length >= 1</b>)
+	 * @param pingPong - whether to ping-pong the animation or not.
+	 * @param sprites  - sprites to include in the animation (<b>must have length >=
+	 *                 1</b>)
 	 */
-	public SpriteAnimation(int animRate, boolean cycle, Sprite... sprites) {
+	public SpriteAnimation(int animRate, boolean pingPong, Sprite... sprites) {
 
 		super(sprites[0]);
 
-		this.cycle = cycle;
+		this.pingPong = pingPong;
 		this.rising = true;
 
 		this.animRate = animRate;
@@ -36,7 +38,7 @@ public class SpriteAnimation extends Sprite {
 
 		if (this.timer >= this.animRate) {
 
-			if (this.cycle) {
+			if (this.pingPong) {
 
 				if (this.rising) {
 
