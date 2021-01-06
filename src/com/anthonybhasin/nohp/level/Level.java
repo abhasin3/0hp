@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import com.anthonybhasin.nohp.GameSettings;
+import com.anthonybhasin.nohp.Screen;
 import com.anthonybhasin.nohp.level.entity.Camera;
 import com.anthonybhasin.nohp.level.entity.DebugRenderable;
+import com.anthonybhasin.nohp.level.entity.EngineDebugRenderable;
 import com.anthonybhasin.nohp.level.entity.Entity;
-import com.anthonybhasin.nohp.level.entity.ImageEntity;
 import com.anthonybhasin.nohp.level.entity.PostRenderable;
 
 public class Level {
@@ -66,16 +68,16 @@ public class Level {
 			if (entity.isPersistent() || onScreen) {
 
 				entity.tick();
-
-				if (entity instanceof ImageEntity) {
-
-					this.camera.setRenderPoint((ImageEntity) entity);
-				}
 			}
+
+//			Always update the bounds incase an entity comes back into frame.
+			entity.bounds = this.camera.getCameraCoordinates(entity);
 		}
 	}
 
 	public void render() {
+
+		Screen.rotate(this.camera);
 
 		List<PostRenderable> postRenderEntities = new ArrayList<PostRenderable>();
 
@@ -88,9 +90,20 @@ public class Level {
 
 			entity.render();
 
-			if (entity instanceof DebugRenderable) {
+			if (GameSettings.engineDebugMode) {
 
-				((DebugRenderable) entity).debugRender();
+				if (entity instanceof EngineDebugRenderable) {
+
+					((EngineDebugRenderable) entity).engineDebugRender();
+				}
+			}
+
+			if (GameSettings.debugMode) {
+
+				if (entity instanceof DebugRenderable) {
+
+					((DebugRenderable) entity).debugRender();
+				}
 			}
 		}
 

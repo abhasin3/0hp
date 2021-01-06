@@ -1,6 +1,6 @@
 package com.anthonybhasin.nohp.math;
 
-public class Vector2D extends Point {
+public class Vector2D extends Point2D {
 
 	public static float dot(Vector2D v1, Vector2D v2) {
 
@@ -55,7 +55,7 @@ public class Vector2D extends Point {
 		super.y = y;
 	}
 
-	public Vector2D(Point point) {
+	public Vector2D(Point2D point) {
 
 		this(point.x, point.y);
 	}
@@ -73,9 +73,12 @@ public class Vector2D extends Point {
 
 	public Vector2D normalize() {
 
-		float length = length();
+		float length = this.length();
 
-		super.set(super.x / length, super.y / length);
+		if (length != 0) {
+
+			super.set(super.x / length, super.y / length);
+		}
 
 		return this;
 	}

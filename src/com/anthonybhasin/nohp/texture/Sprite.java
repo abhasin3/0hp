@@ -10,7 +10,7 @@ public class Sprite {
 
 	private int width, height;
 
-	private String path;
+	private String path = "null";
 
 	private BufferedImage image;
 
@@ -34,6 +34,14 @@ public class Sprite {
 				this.image.setRGB(i, j, col);
 			}
 		}
+	}
+
+	public Sprite(BufferedImage image) {
+
+		this.width = image.getWidth();
+		this.height = image.getHeight();
+
+		this.image = image;
 	}
 
 	public Sprite(String path) {

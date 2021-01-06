@@ -6,17 +6,38 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import com.anthonybhasin.nohp.level.entity.Camera;
+import com.anthonybhasin.nohp.level.entity.CameraRotatable.RotationMode;
 import com.anthonybhasin.nohp.level.entity.ImageEntity;
-import com.anthonybhasin.nohp.math.Point;
+import com.anthonybhasin.nohp.math.Bounds.CameraView;
+import com.anthonybhasin.nohp.math.Point2D;
+import com.anthonybhasin.nohp.math.RotationMath;
 import com.anthonybhasin.nohp.texture.Sprite;
 
 public class Screen {
 
-	public static Graphics2D g;
+	private static Graphics2D g;
 
 	public static void setGraphics(Graphics2D g) {
 
 		Screen.g = g;
+	}
+
+	public static void rotate(double theta) {
+
+		Screen.g.translate(GameSettings.width / 2, GameSettings.height / 2);
+		Screen.g.rotate(theta);
+		Screen.g.translate(-GameSettings.width / 2, -GameSettings.height / 2);
+	}
+
+	public static void rotate(Camera camera) {
+
+		Screen.rotate(RotationMath.ROT_ANGLE[camera.rotation]);
+	}
+
+	public static void unrotate(Camera camera) {
+
+		Screen.rotate(-RotationMath.ROT_ANGLE[camera.rotation]);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -24,15 +45,37 @@ public class Screen {
 
 		protected float x, y;
 
+		protected CameraView cameraView;
+
+		public RenderBuilder() {
+
+			this.x = 0;
+			this.y = 0;
+
+			this.cameraView = CameraView.ROTATED_LAYER;
+		}
+
 		protected abstract void draw_();
 
-		public void draw() {
+		public T draw() {
+
+			if (this.cameraView.equals(CameraView.UNROTATED_LAYER)) {
+
+				Screen.unrotate(Game.instance.level.camera);
+			}
 
 			Screen.g.translate(this.x, this.y);
 
 			this.draw_();
 
 			Screen.g.translate(-this.x, -this.y);
+
+			if (this.cameraView.equals(CameraView.UNROTATED_LAYER)) {
+
+				Screen.rotate(Game.instance.level.camera);
+			}
+
+			return (T) this;
 		}
 
 		public T start(float x, float y) {
@@ -43,11 +86,25 @@ public class Screen {
 			return (T) this;
 		}
 
-		public T start(Point point) {
+		public T start(Point2D point) {
 
 			return this.start(point.x, point.y);
 		}
 
+		public T cameraView(CameraView cameraView) {
+
+			this.cameraView = cameraView;
+
+			return (T) this;
+		}
+	}
+
+	/**
+	 * Useful base class for (mostly) rendering geometry.
+	 */
+	public static abstract class BasicBuilder<T extends RenderBuilder<T>> extends RenderBuilder<T> {
+
+		@SuppressWarnings("unchecked")
 		public T color(Color color) {
 
 			Screen.g.setColor(color);
@@ -55,6 +112,7 @@ public class Screen {
 			return (T) this;
 		}
 
+		@SuppressWarnings("unchecked")
 		public T stroke(Stroke stroke) {
 
 			Screen.g.setStroke(stroke);
@@ -62,16 +120,9 @@ public class Screen {
 			return (T) this;
 		}
 
-		public T strokeWidth(int width) {
+		public T strokeWidth(float width) {
 
 			return this.stroke(new BasicStroke(width));
-		}
-
-		public T font(Font font) {
-
-			Screen.g.setFont(font);
-
-			return (T) this;
 		}
 	}
 
@@ -85,7 +136,7 @@ public class Screen {
 		public T fill();
 	}
 
-	public static class LineBuilder extends RenderBuilder<LineBuilder> {
+	public static class LineBuilder extends BasicBuilder<LineBuilder> {
 
 		public float x2, y2;
 
@@ -103,7 +154,7 @@ public class Screen {
 			return this;
 		}
 
-		public LineBuilder end(Point point) {
+		public LineBuilder end(Point2D point) {
 
 			return this.end(point.x, point.y);
 		}
@@ -114,7 +165,7 @@ public class Screen {
 		return new LineBuilder();
 	}
 
-	public static class RectBuilder extends RenderBuilder<RectBuilder>
+	public static class RectBuilder extends BasicBuilder<RectBuilder>
 			implements RenderDimensions<RectBuilder>, RenderFillable<RectBuilder> {
 
 		public int width, height;
@@ -154,7 +205,7 @@ public class Screen {
 		return new RectBuilder();
 	}
 
-	public static class TextBuilder extends RenderBuilder<TextBuilder> {
+	public static class TextBuilder extends BasicBuilder<TextBuilder> {
 
 		public String text;
 
@@ -167,6 +218,13 @@ public class Screen {
 		protected void draw_() {
 
 			Screen.g.drawString(this.text, 0, 0);
+		}
+
+		public TextBuilder font(Font font) {
+
+			Screen.g.setFont(font);
+
+			return this;
 		}
 	}
 
@@ -209,7 +267,16 @@ public class Screen {
 
 	public static SpriteBuilder sprite(ImageEntity entity) {
 
-		return new SpriteBuilder(entity.getSprite()).start(entity.renderPoint).dimensions(entity.getWidth(),
+		SpriteBuilder ret = new SpriteBuilder(entity.getSprite());
+
+		Camera camera = Game.instance.level.camera;
+
+		if (entity.getRotationMode().equals(RotationMode.BILLBOARD) && camera.rotation != 0) {
+
+			ret = ret.cameraView(CameraView.UNROTATED_LAYER);
+		}
+
+		return ret.start(entity.bounds.getMinX(), entity.bounds.getMinY()).dimensions(entity.getWidth(),
 				entity.getHeight());
 	}
 }

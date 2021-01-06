@@ -1,7 +1,5 @@
 package com.anthonybhasin.nohp.level.entity;
 
-import com.anthonybhasin.nohp.GameSettings;
-
 public interface PostRenderable {
 
 	/**
@@ -10,9 +8,6 @@ public interface PostRenderable {
 	 * 
 	 * Useful for drawing overlays after a level's environment and entities have
 	 * drawn themselves to the {@link com.anthonybhasin.nohp.Screen}.
-	 * 
-	 * This method will only be called if debug mode is activated
-	 * {@link GameSettings#debugMode}
 	 */
 	public abstract void postRender();
 }

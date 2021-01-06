@@ -1,6 +1,6 @@
 package com.anthonybhasin.nohp.math;
 
-public class Position extends Point {
+public class Position extends Point2D {
 
 	/**
 	 * Refers to the z-ordering index for rendering.
